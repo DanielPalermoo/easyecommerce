@@ -34,11 +34,17 @@ Built as a portfolio project to demonstrate production-grade backend development
 ---
 
 ## 🌐 Live Demo
-You can explore the API instantly without running anything locally.
+The application was previously deployed on Railway and included a public Swagger UI for testing the API.
 
-* **Swagger UI (Railway):** [https://easyecommerce-vwi-production.up.railway.app/swagger-ui/index.html](https://easyecommerce-vwi-production.up.railway.app/swagger-ui/index.html)
-📖
-*(Note: Since this is hosted on a free tier, the first request might take a few seconds to wake up the server).*
+At the moment, the live deployment is unavailable because the free hosting tier previously used is no longer offered.
+
+You can still:
+
+* Browse the complete source code in this repository.
+* Clone the project and run it locally using Docker and PostgreSQL.
+* Explore the documented API through the included OpenAPI/Swagger configuration after starting the application locally.
+
+A new public deployment will be added when a suitable hosting platform is available.
 
 ---
   

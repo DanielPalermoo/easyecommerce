@@ -3,7 +3,7 @@
 > Production-ready e-commerce backend built with Java 21, Spring Boot and JWT authentication.  
 > Clean architecture, real business logic, and a complete purchase flow — not just a CRUD demo.  
   
-[![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square)](https://openjdk.org/)  
+[![Java](https://img.shields.io/badge/Java-25-orange?style=flat-square)](https://openjdk.org/)  
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?style=flat-square)](https://spring.io/projects/spring-boot)  
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?style=flat-square)](https://www.postgresql.org/)  
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](LICENSE)  

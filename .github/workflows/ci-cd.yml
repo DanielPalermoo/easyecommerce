@@ -1,0 +1,115 @@
+name: EasyCommerce CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
+jobs:
+  # ========================================================
+  # JOB 1: Compilación y Pruebas Unitarias Automatizadas
+  # ========================================================
+  test:
+    name: Build & Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21 (Eclipse Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Dar permisos de ejecución a Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Compilar y ejecutar pruebas unitarias con Maven
+        run: ./mvnw -B clean test
+
+      - name: Publicar reporte de pruebas Surefire (Artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-test-reports
+          path: target/surefire-reports/
+          retention-days: 7
+
+  # ========================================================
+  # JOB 2: Análisis de Seguridad en Dependencias (SCA - Punto 14)
+  # ========================================================
+  security-scan:
+    name: Security Vulnerability Scan (Trivy)
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Escaneo de vulnerabilidades con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0' # Permite continuar y generar reporte para la cátedra
+
+  # ========================================================
+  # JOB 3: Construcción de la Imagen Docker del Backend
+  # ========================================================
+  docker-build:
+    name: Docker Build & Package
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Iniciar sesión en GitHub Container Registry (GHCR)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extraer metadatos para Docker (Tags & Labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/backend
+          tags: |
+            type=ref,event=branch
+            type=sha,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Construir imagen Docker (y publicar en GHCR si es push a develop/main)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

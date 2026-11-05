@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment files, Secrets & Binaries ###
+.env
+.evn
+*.env
+*.env.*
+*.zip

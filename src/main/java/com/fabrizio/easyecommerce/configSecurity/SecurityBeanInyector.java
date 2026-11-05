@@ -18,29 +18,27 @@ public class SecurityBeanInyector {
     @Autowired
     private UserRepository userRepository;
 
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
-      return authenticationConfiguration.getAuthenticationManager();
-  }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
-  @Bean
-    public AuthenticationProvider authenticationProvider (UserDetailsService userDetailsService){
-      DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-      provider.setPasswordEncoder(passwordEncoder());
-      return provider;
-  }
+    @Bean
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 
-  @Bean
-  public PasswordEncoder passwordEncoder(){
-      return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  public UserDetailsService userDetailsService() {
-       return email -> {
-       return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
-       };
-  }
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return email -> userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
+    }
 
-  }
-
+}

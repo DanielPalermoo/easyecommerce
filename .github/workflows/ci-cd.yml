@@ -61,6 +61,19 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
+      - name: Configurar Java 21 y cache Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Dar permisos a Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Pre-cargar dependencias Maven en cache local
+        run: ./mvnw -B dependency:resolve -DskipTests
+
       - name: Escaneo de vulnerabilidades con Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -68,7 +81,7 @@ jobs:
           scan-ref: '.'
           format: 'table'
           severity: 'CRITICAL,HIGH'
-          exit-code: '0' # Permite continuar y generar reporte para la cátedra
+          exit-code: '0' # Genera el reporte de hallazgos para la cátedra sin romper el build
 
   # ========================================================
   # JOB 3: Construcción de la Imagen Docker del Backend

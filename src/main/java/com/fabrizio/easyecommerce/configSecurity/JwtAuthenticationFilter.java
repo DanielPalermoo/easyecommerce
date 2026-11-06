@@ -1,8 +1,8 @@
 package com.fabrizio.easyecommerce.configSecurity;
 
-import com.fabrizio.easyecommerce.Service.JwtService;
+import com.fabrizio.easyecommerce.Service.jwt.JwtService;
 import com.fabrizio.easyecommerce.entity.User;
-import com.fabrizio.easyecommerce.repository.UserRepository;
+import com.fabrizio.easyecommerce.repository.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

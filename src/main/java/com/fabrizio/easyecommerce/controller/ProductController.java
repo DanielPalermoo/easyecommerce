@@ -1,9 +1,9 @@
 package com.fabrizio.easyecommerce.controller;
 
 
-import com.fabrizio.easyecommerce.Service.ProductService;
-import com.fabrizio.easyecommerce.dto.ProductRequestDTO;
-import com.fabrizio.easyecommerce.dto.ProductResponseDTO;
+import com.fabrizio.easyecommerce.Service.product.ProductService;
+import com.fabrizio.easyecommerce.dto.product.ProductRequestDTO;
+import com.fabrizio.easyecommerce.dto.product.ProductResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

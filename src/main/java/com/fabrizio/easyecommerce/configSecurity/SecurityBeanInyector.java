@@ -1,6 +1,6 @@
 package com.fabrizio.easyecommerce.configSecurity;
 
-import com.fabrizio.easyecommerce.repository.UserRepository;
+import com.fabrizio.easyecommerce.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

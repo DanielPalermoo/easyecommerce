@@ -1,7 +1,7 @@
 package com.fabrizio.easyecommerce.controller;
 
-import com.fabrizio.easyecommerce.Service.OrderService;
-import com.fabrizio.easyecommerce.dto.OrderResponseDTO;
+import com.fabrizio.easyecommerce.Service.order.OrderService;
+import com.fabrizio.easyecommerce.dto.order.OrderResponseDTO;
 import com.fabrizio.easyecommerce.enums.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

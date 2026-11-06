@@ -1,7 +1,7 @@
 package com.fabrizio.easyecommerce.controller;
 
-import com.fabrizio.easyecommerce.Service.OrderService;
-import com.fabrizio.easyecommerce.dto.OrderResponseDTO;
+import com.fabrizio.easyecommerce.Service.order.OrderService;
+import com.fabrizio.easyecommerce.dto.order.OrderResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

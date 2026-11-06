@@ -1,7 +1,7 @@
 package com.fabrizio.easyecommerce.controller;
 
-import com.fabrizio.easyecommerce.dto.AuthenticationRequest;
-import com.fabrizio.easyecommerce.dto.RegisterRequest;
+import com.fabrizio.easyecommerce.dto.authentication.AuthenticationRequest;
+import com.fabrizio.easyecommerce.dto.authentication.RegisterRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

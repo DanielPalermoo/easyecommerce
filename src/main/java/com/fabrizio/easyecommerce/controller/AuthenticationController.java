@@ -1,10 +1,10 @@
 package com.fabrizio.easyecommerce.controller;
 
-import com.fabrizio.easyecommerce.Service.AuthenticationService;
-import com.fabrizio.easyecommerce.dto.AuthenticationRequest;
-import com.fabrizio.easyecommerce.dto.AuthenticationResponse;
-import com.fabrizio.easyecommerce.dto.RegisterRequest;
-import com.fabrizio.easyecommerce.dto.UserDTO;
+import com.fabrizio.easyecommerce.Service.auth.AuthenticationService;
+import com.fabrizio.easyecommerce.dto.authentication.AuthenticationRequest;
+import com.fabrizio.easyecommerce.dto.authentication.AuthenticationResponse;
+import com.fabrizio.easyecommerce.dto.authentication.RegisterRequest;
+import com.fabrizio.easyecommerce.dto.authentication.UserDTO;
 import com.fabrizio.easyecommerce.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

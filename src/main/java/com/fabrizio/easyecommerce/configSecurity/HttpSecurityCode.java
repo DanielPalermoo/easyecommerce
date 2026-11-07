@@ -40,7 +40,16 @@ public class HttpSecurityCode {
 
     public Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> buildRequestMatchers(){
         return authConfig -> {
-            authConfig.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+            authConfig.requestMatchers(
+                    "/v3/api-docs",
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/swagger-resources/**",
+                    "/webjars/**",
+                    "/error",
+                    "/actuator/**"
+            ).permitAll();
             authConfig.requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll();
             authConfig.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll();
             authConfig.requestMatchers(HttpMethod.GET, "/api/auth/auth-me").authenticated();

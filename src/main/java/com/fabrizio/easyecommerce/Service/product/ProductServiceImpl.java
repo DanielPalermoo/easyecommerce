@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.Service.product;
+import lombok.RequiredArgsConstructor;
 
 import com.fabrizio.easyecommerce.dto.product.ProductRequestDTO;
 import com.fabrizio.easyecommerce.dto.product.ProductResponseDTO;
@@ -18,18 +19,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+@RequiredArgsConstructor
+public class ProductServiceImpl implements ProductService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private ProductMapper productMapper;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
 
     @Override
     public List<ProductResponseDTO> getAllProducts() {

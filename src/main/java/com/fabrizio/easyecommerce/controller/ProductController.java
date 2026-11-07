@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.controller;
+import lombok.RequiredArgsConstructor;
 
 
 import com.fabrizio.easyecommerce.Service.product.ProductService;
@@ -48,9 +49,10 @@ import java.util.List;
     - Active status (soft delete)
     """
 )
+@RequiredArgsConstructor
 public class ProductController {
-    @Autowired
-    private ProductService productService;
+
+    private final ProductService productService;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 

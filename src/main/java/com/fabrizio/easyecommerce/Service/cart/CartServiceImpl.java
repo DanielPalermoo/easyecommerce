@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.Service.cart;
+import lombok.RequiredArgsConstructor;
 
 import com.fabrizio.easyecommerce.dto.cart.CartItemRequestDTO;
 import com.fabrizio.easyecommerce.dto.cart.CartResponseDTO;
@@ -27,25 +28,15 @@ import java.util.Optional;
 
 @Slf4j // Anotación de Lombok para habilitar el objeto 'log'
 @Service
+@RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private CartRepository cartRepository;
-
-    @Autowired
-    private CartItemRepository cartItemRepository;
-
-    @Autowired
-    private CartMapper cartMapper;
-
-    @Autowired
-    private CartItemMapper cartItemMapper;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final CartMapper cartMapper;
+    private final CartItemMapper cartItemMapper;
 
     @Override
     @Transactional

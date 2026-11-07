@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.Service.jwt;
+import lombok.RequiredArgsConstructor;
 
 import com.fabrizio.easyecommerce.entity.User;
 import io.jsonwebtoken.Claims;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
@@ -23,8 +25,7 @@ public class JwtService {
     @Value("${security.jwt.expiration-minutes}")
     private Long EXPIRATION_MINUTES;
 
-    @Autowired
-    private Key jwtSigningKey;
+    private final Key jwtSigningKey;
 
 
     public String generateToken(String email, Map<String, Object> extraClaims){

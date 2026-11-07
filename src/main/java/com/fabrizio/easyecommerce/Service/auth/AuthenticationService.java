@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.Service.auth;
+import lombok.RequiredArgsConstructor;
 
 import com.fabrizio.easyecommerce.Service.jwt.JwtService;
 import com.fabrizio.easyecommerce.dto.authentication.AuthenticationRequest;
@@ -22,20 +23,17 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private PasswordEncoder passwordEncode;
+
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncode;
 
 
     public void register(RegisterRequest registerRequest){

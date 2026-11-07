@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.configSecurity;
+import lombok.RequiredArgsConstructor;
 
 import com.fabrizio.easyecommerce.Service.jwt.JwtService;
 import com.fabrizio.easyecommerce.entity.User;
@@ -16,13 +17,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
     @Override

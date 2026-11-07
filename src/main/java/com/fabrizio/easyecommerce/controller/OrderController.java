@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.controller;
+import lombok.RequiredArgsConstructor;
 
 import com.fabrizio.easyecommerce.Service.order.OrderService;
 import com.fabrizio.easyecommerce.dto.order.OrderResponseDTO;
@@ -31,10 +32,11 @@ import java.util.List;
     - **Shipping Details**: Every order stores a snapshot of the address (Street, City, ZipCode) to ensure delivery consistency.
     """
 )
+@RequiredArgsConstructor
 public class OrderController {
 
 
-    private OrderService orderService;
+    private final OrderService orderService;
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: ${DB_NAME:jdbc:postgresql://localhost:5432/easyecommerce?options=-c%20timezone=UTC}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:CAMBIAR_POR_PASSWORD_SEGURA}
 
   jpa:
     hibernate:
@@ -18,6 +18,7 @@ spring:
     init:
       mode: ${SQL_INIT_MODE:always}
       data-locations: classpath:import.sql
+      continue-on-error: true
 
   output:
     ansi:

@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.controller;
+import lombok.RequiredArgsConstructor;
 
 import com.fabrizio.easyecommerce.Service.cart.CartService;
 import com.fabrizio.easyecommerce.dto.cart.CartItemRequestDTO;
@@ -42,9 +43,10 @@ import org.springframework.web.bind.annotation.*;
     - CLEAR_CART → empty the entire cart
     """
 )
+@RequiredArgsConstructor
 public class CartController {
 
-    private CartService cartService;
+    private final CartService cartService;
 
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);
 

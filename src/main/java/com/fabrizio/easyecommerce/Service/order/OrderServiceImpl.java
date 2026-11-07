@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.Service.order;
+import lombok.RequiredArgsConstructor;
 
 
 import com.fabrizio.easyecommerce.Service.cart.CartService;
@@ -26,13 +27,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class OrderServiceImpl implements OrderService{
+@RequiredArgsConstructor
+public class OrderServiceImpl implements OrderService {
 
-    private OrderRepository orderRepository;
-    private CartRepository cartRepository;
-    private ProductRepository productRepository;
-    private OrderMapper orderMapper;
-    private CartService cartService;
+    private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
+    private final OrderMapper orderMapper;
+    private final CartService cartService;
 
     @Override
     @Transactional

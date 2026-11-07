@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.Service.category;
+import lombok.RequiredArgsConstructor;
 
 
 import com.fabrizio.easyecommerce.dto.category.CategoryRequestDTO;
@@ -14,10 +15,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategoryService{
+@RequiredArgsConstructor
+public class CategoryServiceImpl implements CategoryService {
 
-    private CategoryRepository categoryRepository;
-    private CategoryMapper categoryMapper;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public List<CategoryResponseDTO> getAllCategories() {

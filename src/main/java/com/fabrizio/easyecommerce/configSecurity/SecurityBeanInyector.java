@@ -1,7 +1,6 @@
 package com.fabrizio.easyecommerce.configSecurity;
 
 import com.fabrizio.easyecommerce.repository.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,9 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class SecurityBeanInyector {
-
-    @
-    private UserRepository userRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -36,7 +32,7 @@ public class SecurityBeanInyector {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService(UserRepository userRepository) {
         return email -> userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
     }
 

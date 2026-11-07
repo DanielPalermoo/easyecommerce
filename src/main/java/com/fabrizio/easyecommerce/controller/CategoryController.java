@@ -1,4 +1,5 @@
 package com.fabrizio.easyecommerce.controller;
+import lombok.RequiredArgsConstructor;
 
 import com.fabrizio.easyecommerce.Service.category.CategoryService;
 import com.fabrizio.easyecommerce.dto.category.CategoryRequestDTO;
@@ -40,10 +41,11 @@ import java.util.List;
     - DELETE_ONE_CATEGORY → delete category
     """
 )
+@RequiredArgsConstructor
 public class CategoryController {
 
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @Operation(
             summary = "Get all categories",

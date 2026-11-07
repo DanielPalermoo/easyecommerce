@@ -49,7 +49,7 @@ import java.util.List;
     """
 )
 public class ProductController {
-    @Autowired
+
     private ProductService productService;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);

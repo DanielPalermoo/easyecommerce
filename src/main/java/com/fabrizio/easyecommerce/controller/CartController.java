@@ -44,7 +44,6 @@ import org.springframework.web.bind.annotation.*;
 )
 public class CartController {
 
-    @Autowired
     private CartService cartService;
 
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);

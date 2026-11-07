@@ -22,13 +22,8 @@ public class ProductServiceImpl implements ProductService{
 
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
-    @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
     private CategoryRepository categoryRepository;
-
-    @Autowired
     private ProductMapper productMapper;
 
     @Override

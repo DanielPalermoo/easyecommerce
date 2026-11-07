@@ -23,7 +23,6 @@ public class JwtService {
     @Value("${security.jwt.expiration-minutes}")
     private Long EXPIRATION_MINUTES;
 
-    @Autowired
     private Key jwtSigningKey;
 
 

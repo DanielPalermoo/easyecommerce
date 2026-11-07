@@ -26,15 +26,11 @@ public class AuthenticationService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
-    @Autowired
+
     private AuthenticationManager authenticationManager;
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
     private JwtService jwtService;
-    @Autowired
     private UserMapper userMapper;
-    @Autowired
     private PasswordEncoder passwordEncode;
 
 

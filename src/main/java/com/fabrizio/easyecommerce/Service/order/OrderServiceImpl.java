@@ -28,19 +28,10 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements OrderService{
 
-    @Autowired
     private OrderRepository orderRepository;
-
-    @Autowired
     private CartRepository cartRepository;
-
-    @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
     private OrderMapper orderMapper;
-
-    @Autowired
     private CartService cartService;
 
     @Override

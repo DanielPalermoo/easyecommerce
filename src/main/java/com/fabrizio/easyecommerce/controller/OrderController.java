@@ -33,7 +33,7 @@ import java.util.List;
 )
 public class OrderController {
 
-    @Autowired
+
     private OrderService orderService;
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);

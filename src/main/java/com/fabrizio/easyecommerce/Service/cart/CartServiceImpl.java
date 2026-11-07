@@ -29,22 +29,11 @@ import java.util.Optional;
 @Service
 public class CartServiceImpl implements CartService {
 
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
     private CartRepository cartRepository;
-
-    @Autowired
     private CartItemRepository cartItemRepository;
-
-    @Autowired
     private CartMapper cartMapper;
-
-    @Autowired
     private CartItemMapper cartItemMapper;
 
     @Override

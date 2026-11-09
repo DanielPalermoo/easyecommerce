@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -39,8 +40,23 @@ public class HttpSecurityCode {
                .sessionManagement(sessionManConfig -> sessionManConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                .authenticationProvider(authenticationProvider)
                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+               .headers(headers -> headers
+                       .httpStrictTransportSecurity(hsts -> hsts
+                               .includeSubDomains(true)
+                               .maxAgeInSeconds(31536000)
+                       )
+                       .contentSecurityPolicy(csp -> csp
+                               .policyDirectives("default-src 'self'; frame-ancestors 'none'; object-src 'none';")
+                       )
+                       .referrerPolicy(referrer -> referrer
+                               .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+                       )
+                       .permissionsPolicy(permissions -> permissions
+                               .policy("geolocation=(), microphone=(), camera=()")
+                       )
+               )
                .authorizeHttpRequests(buildRequestMatchers());
-   return http.build();
+       return http.build();
 
    }
 

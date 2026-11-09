@@ -118,12 +118,20 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public void updateCartItemQuantity(Long cartItemId, int quantity) {
-        log.info("Actualizando cantidad del CartItem ID: {} a {}", cartItemId, quantity);
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Usuario [{}] actualizando cantidad del CartItem ID: {} a {}", currentEmail, cartItemId, quantity);
 
         CartItem item = cartItemRepository.findById(cartItemId).orElseThrow(() -> {
             log.error("No se encontró el CartItem con ID: {}", cartItemId);
             return new CartNotFoundException("Cart item with id " + cartItemId + " not found");
         });
+
+        // 🔒 CONTROL DE ACCESO A NIVEL DE OBJETO (PROPIEDAD):
+        if (!item.getCart().getUser().getEmail().equals(currentEmail)) {
+            log.warn("ACCESO DENEGADO: El usuario [{}] intentó modificar el CartItem [{}] perteneciente a [{}]",
+                    currentEmail, cartItemId, item.getCart().getUser().getEmail());
+            throw new org.springframework.security.access.AccessDeniedException("No tienes autorización para modificar ítems de otro usuario");
+        }
 
         if (quantity <= 0) {
             log.warn("Intento de asignar cantidad inválida ({}) al CartItem ID: {}", quantity, cartItemId);
@@ -132,18 +140,28 @@ public class CartServiceImpl implements CartService {
 
         item.setQuantity(quantity);
         cartItemRepository.save(item);
+        log.info("CartItem ID: {} actualizado exitosamente a cantidad {}", cartItemId, quantity);
     }
 
     @Override
     @Transactional
     public void removeCartItem(Long cartItemId) {
-        log.info("Removiendo ítem ID: {} del carrito", cartItemId);
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Usuario [{}] removiendo ítem ID: {} del carrito", currentEmail, cartItemId);
 
-        if (!cartItemRepository.existsById(cartItemId)) {
+        CartItem item = cartItemRepository.findById(cartItemId).orElseThrow(() -> {
             log.error("Fallo al eliminar: El CartItem ID: {} no existe", cartItemId);
-            throw new CartNotFoundException("Cart item with id " + cartItemId + " not found");
+            return new CartNotFoundException("Cart item with id " + cartItemId + " not found");
+        });
+
+        // 🔒 CONTROL DE ACCESO A NIVEL DE OBJETO (PROPIEDAD):
+        if (!item.getCart().getUser().getEmail().equals(currentEmail)) {
+            log.warn("ACCESO DENEGADO: El usuario [{}] intentó eliminar el CartItem [{}] perteneciente a [{}]",
+                    currentEmail, cartItemId, item.getCart().getUser().getEmail());
+            throw new org.springframework.security.access.AccessDeniedException("No tienes autorización para eliminar ítems de otro usuario");
         }
-        cartItemRepository.deleteById(cartItemId);
+
+        cartItemRepository.delete(item);
         log.info("Ítem ID: {} eliminado correctamente", cartItemId);
     }
 

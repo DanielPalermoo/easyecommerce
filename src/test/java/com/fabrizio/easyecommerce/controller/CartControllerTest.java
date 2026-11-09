@@ -175,4 +175,23 @@ class CartControllerTest {
                         .param("quantity", "5"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void shouldFailWhenUpdatingAnotherUsersCartItem() throws Exception {
+        String adminToken = getAdminToken();
+
+        mockMvc.perform(put("/api/cart/item/1")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .param("quantity", "5"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldFailWhenRemovingAnotherUsersCartItem() throws Exception {
+        String adminToken = getAdminToken();
+
+        mockMvc.perform(delete("/api/cart/item/1")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isForbidden());
+    }
 }

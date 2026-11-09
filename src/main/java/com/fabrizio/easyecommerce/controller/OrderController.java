@@ -41,23 +41,21 @@ public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     @Operation(
-            summary = "Perform Checkout and capture Address",
-            description = """
-        Converts the user's cart into a permanent order and clears the cart. 
-        It automatically links the user's current shipping details (Street, City, Zip) to the order.
-        """,
+            summary = "Perform Checkout for authenticated user",
+            description = "Converts the authenticated user's cart into an order, captures shipping snapshot and clears cart.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Order created successfully with shipping snapshot"),
+            @ApiResponse(responseCode = "201", description = "Order created successfully"),
             @ApiResponse(responseCode = "400", description = "Insufficient stock or empty cart"),
             @ApiResponse(responseCode = "404", description = "Cart or User not found")
     })
     @PreAuthorize("hasAuthority('PERFORM_CHECKOUT')")
-    @PostMapping("/checkout/{userId}")
-    public ResponseEntity<OrderResponseDTO> checkout(@PathVariable Long userId) {
-        logger.info("REST request to perform checkout for user: {}", userId);
-        OrderResponseDTO response = orderService.performCheckout(userId);
+    @PostMapping("/checkout")
+    public ResponseEntity<OrderResponseDTO> checkout(Authentication authentication) {
+        String email = authentication.getName();
+        logger.info("REST request to perform checkout for authenticated user: {}", email);
+        OrderResponseDTO response = orderService.performCheckoutByEmail(email);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

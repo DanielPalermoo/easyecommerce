@@ -8,6 +8,8 @@ public interface OrderService {
 
     OrderResponseDTO performCheckout(Long userId);
 
+    OrderResponseDTO performCheckoutByEmail(String email);
+
     List<OrderResponseDTO> getMyOrders(String email);
 
     OrderResponseDTO getOrderById(Long orderId);

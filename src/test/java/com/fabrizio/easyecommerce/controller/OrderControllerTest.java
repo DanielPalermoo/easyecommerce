@@ -51,9 +51,9 @@ public class OrderControllerTest {
     @WithMockUser(authorities = "PERFORM_CHECKOUT")
     void shouldPerformCheckoutSuccessfully() throws Exception {
         // Simulamos que el servicio devuelve nuestra orden mockeada
-        Mockito.when(orderService.performCheckout(anyLong())).thenReturn(mockOrderResponse);
+        Mockito.when(orderService.performCheckoutByEmail(Mockito.anyString())).thenReturn(mockOrderResponse);
 
-        mockMvc.perform(post("/api/orders/checkout/1")
+        mockMvc.perform(post("/api/orders/checkout")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.shippingAddress").value("Belgrano 450"))

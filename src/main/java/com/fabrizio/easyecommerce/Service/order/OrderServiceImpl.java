@@ -89,6 +89,60 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
+    public OrderResponseDTO performCheckoutByEmail(String email) {
+        log.info("Performing checkout for authenticated user with email: {}", email);
+        Cart cart = cartRepository.findByUserEmail(email)
+                .orElseThrow(() -> new CartNotFoundException("Cart not found for user: " + email));
+                
+        if (cart.getItems().isEmpty()) {
+            log.warn("Cart is empty for user: {}", email);
+            throw new CartNotFoundException("Cart is empty for user: " + email);
+        }
+
+        Order order = new Order();
+        order.setUser(cart.getUser());
+        order.setCity(cart.getUser().getCity());
+        order.setShippingAddress(cart.getUser().getStreet());
+        order.setZipCode(cart.getUser().getZipCode());
+        order.setStatus(OrderStatus.CREATED);
+
+        List<OrderItem> orderItems = cart.getItems().stream()
+                .map(cartItem -> {
+                    Product product = cartItem.getProduct();
+                    if (product.getStock() < cartItem.getQuantity()) {
+                        throw new InsufficientStockException("Sin stock para: " + product.getName());
+                    }
+                    product.setStock(product.getStock() - cartItem.getQuantity());
+                    productRepository.save(product);
+
+                    OrderItem oi = new OrderItem();
+                    oi.setOrder(order);
+                    oi.setProduct(product);
+                    oi.setQuantity(cartItem.getQuantity());
+                    oi.setPrice(product.getPrice());
+                    return oi;
+                })
+                .collect(Collectors.toList());
+
+        BigDecimal totalOrder = orderItems.stream()
+                .map(item -> item.getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        order.setItems(orderItems);
+        order.setTotalAmount(totalOrder);
+
+        Order savedOrder = orderRepository.save(order);
+        
+        // Vacía el carrito del usuario autenticado
+        cartService.clearCartByEmail(email);
+
+        log.info("Checkout completed for user: {}. Order id: {}", email, savedOrder.getId());
+        return orderMapper.toOrderResponseDTO(savedOrder);
+    }
+
+
+    @Override
     @Transactional(readOnly = true)
     public List<OrderResponseDTO> getMyOrders(String email) {
         log.info("Fetching orders for user with email: {}", email);

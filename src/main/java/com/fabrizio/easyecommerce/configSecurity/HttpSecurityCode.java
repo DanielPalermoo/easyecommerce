@@ -65,9 +65,11 @@ public class HttpSecurityCode {
                     "/swagger-ui.html",
                     "/swagger-resources/**",
                     "/webjars/**",
-                    "/error",
-                    "/actuator/**"
+                    "/error"
             ).permitAll();
+
+            authConfig.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
+            authConfig.requestMatchers("/actuator/**").hasRole("ADMINISTRATOR");
             authConfig.requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll();
             authConfig.requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll();
             authConfig.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll();

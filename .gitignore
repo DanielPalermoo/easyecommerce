@@ -38,3 +38,6 @@ build/
 *.env
 *.env.*
 *.zip
+
+# Specs internas de remediación
+specs_seguridad/

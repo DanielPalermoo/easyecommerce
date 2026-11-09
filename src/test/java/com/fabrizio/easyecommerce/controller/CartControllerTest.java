@@ -110,7 +110,7 @@ class CartControllerTest {
     void shouldClearCart() throws Exception {
         String token = getUserToken();
 
-        mockMvc.perform(delete("/api/cart/clear/2")
+        mockMvc.perform(delete("/api/cart/clear")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Cart cleared successfully"));

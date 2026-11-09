@@ -10,6 +10,7 @@ public interface CartService {
         void updateCartItemQuantity(Long cartItemId, int quantity);
         void removeCartItem(Long cartItemId);
         void clearCart(Long userId);
+        void clearCartByEmail(String email);
     }
 
 

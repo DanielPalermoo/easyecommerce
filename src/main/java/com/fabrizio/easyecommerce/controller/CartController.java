@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -139,19 +140,21 @@ public class CartController {
     }
 
     @Operation(
-            summary = "Clear entire cart",
-            description = "Removes all items from a specific user's cart.",
+            summary = "Clear current user's cart",
+            description = "Empties the shopping cart of the currently authenticated user.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cart cleared successfully"),
+            @ApiResponse(responseCode = "403", description = "Missing CLEAR_CART permission"),
             @ApiResponse(responseCode = "404", description = "Cart not found")
     })
     @PreAuthorize("hasAuthority('CLEAR_CART')")
-    @DeleteMapping("/clear/{userId}")
-    public ResponseEntity<String> clearCart(@PathVariable Long userId) {
-        logger.info("REST request to clear cart for user ID: {}", userId);
-        cartService.clearCart(userId);
+    @DeleteMapping("/clear")
+    public ResponseEntity<String> clearMyCart(Authentication authentication) {
+        String email = authentication.getName();
+        logger.info("REST request to clear cart for authenticated user: {}", email);
+        cartService.clearCartByEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body("Cart cleared successfully");
     }
 }

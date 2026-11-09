@@ -162,4 +162,20 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart);
         log.info("Se eliminaron {} productos. El carrito del usuario {} ahora está vacío", itemsRemoved, userId);
     }
+
+    @Override
+    @Transactional
+    public void clearCartByEmail(String email) {
+        log.info("Vaciando carrito para el usuario autenticado con email: {}", email);
+
+        Cart cart = cartRepository.findByUserEmail(email).orElseThrow(() -> {
+            log.error("No se puede vaciar: Carrito para usuario {} no encontrado", email);
+            return new CartNotFoundException("Cart for user " + email + " not found");
+        });
+
+        int itemsRemoved = cart.getItems().size();
+        cart.getItems().clear();
+        cartRepository.save(cart);
+        log.info("Se eliminaron {} productos. El carrito del usuario {} ahora está vacío", itemsRemoved, email);
+    }
 }

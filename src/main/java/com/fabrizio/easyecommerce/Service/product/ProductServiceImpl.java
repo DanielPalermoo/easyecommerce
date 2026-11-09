@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -29,15 +31,16 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     @Override
-    public List<ProductResponseDTO> getAllProducts() {
-        logger.info("Retrieving all active products");
-        List<Product> products = productRepository.findByActive(true);
-        if(products.isEmpty()){
-            logger.warn("No active products found in database");
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
+        logger.info("Retrieving active products with pagination: page={}, size={}", pageable.getPageNumber(), pageable.getPageSize());
+        Page<Product> productPage = productRepository.findByActive(true, pageable);
+        
+        if (productPage.isEmpty()) {
+            logger.warn("No active products found for requested page");
             throw new ProductsNotFoundException("No products found");
         }
-        logger.info("Found {} active products", products.size());
-        return productMapper.toProductResponseDTOList(products);
+        
+        return productPage.map(productMapper::toProductResponseDTO);
     }
 
     @Override

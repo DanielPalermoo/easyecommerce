@@ -2,11 +2,11 @@ package com.fabrizio.easyecommerce.Service.product;
 
 import com.fabrizio.easyecommerce.dto.product.ProductRequestDTO;
 import com.fabrizio.easyecommerce.dto.product.ProductResponseDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
-    List<ProductResponseDTO> getAllProducts();
+    Page<ProductResponseDTO> getAllProducts(Pageable pageable);
     ProductResponseDTO getProductById(Long id);
     void creteProduct(ProductRequestDTO request);
     void updateProduct(Long id, ProductRequestDTO request);

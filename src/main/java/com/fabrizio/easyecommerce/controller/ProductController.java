@@ -18,6 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 import java.util.List;
 
@@ -57,36 +60,16 @@ public class ProductController {
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Operation(
-            summary = "Get all products",
-            description = """
-        Retrieve all active products with their category information.
-        Requires READ_ALL_PRODUCTS permission.
-
-        📋 Returns:
-        - Product ID, name, description
-        - Price and stock information
-        - Category name
-        - Creation date
-        """,
+            summary = "Get all products (Paginated)",
+            description = "Retrieve active products with pagination and sorting controls.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Products retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "No products found"),
-            @ApiResponse(responseCode = "403", description = "Access denied (missing READ_ALL_PRODUCTS permission)")
-    })
     @PreAuthorize("hasAuthority('READ_ALL_PRODUCTS')")
     @GetMapping
-    public ResponseEntity<List<ProductResponseDTO>> getAllProducts(){
-        logger.info("Request to get all products");
-        try {
-            List<ProductResponseDTO> products = productService.getAllProducts();
-            logger.info("Retrieved {} products successfully", products.size());
-            return ResponseEntity.status(HttpStatus.OK).body(products);
-        } catch (Exception e) {
-            logger.error("Failed to retrieve products", e);
-            throw e;
-        }
+    public ResponseEntity<Page<ProductResponseDTO>> getAllProducts(
+            @PageableDefault(page = 0, size = 20, sort = "name") Pageable pageable) {
+        logger.info("Request to get paginated products");
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProducts(pageable));
     }
 
     @Operation(

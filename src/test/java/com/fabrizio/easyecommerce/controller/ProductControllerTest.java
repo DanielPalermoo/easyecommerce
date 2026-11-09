@@ -72,7 +72,7 @@ class ProductControllerTest {
         return json.get("jwt").asText();
     }
 
-    // 🟢 GET ALL PRODUCTS (usa import.sql → siempre hay 12 productos)
+    // 🟢 GET ALL PRODUCTS (Paginated)
     @Test
     void shouldGetAllProducts() throws Exception {
 
@@ -81,7 +81,24 @@ class ProductControllerTest {
         mockMvc.perform(get("/api/products")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(greaterThanOrEqualTo(1)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(greaterThanOrEqualTo(1)))
+                .andExpect(jsonPath("$.totalElements").value(greaterThanOrEqualTo(1)));
+    }
+
+    @Test
+    void shouldGetPaginatedProductsWithCustomPageAndSize() throws Exception {
+        String token = getUserToken();
+
+        mockMvc.perform(get("/api/products")
+                        .param("page", "0")
+                        .param("size", "2")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.number").value(0));
     }
 
     // 🟢 GET PRODUCT BY ID (usa producto existente del import.sql - ID 2 para evitar conflictos)

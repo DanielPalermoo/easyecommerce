@@ -41,3 +41,7 @@ build/
 
 # Specs internas de remediación
 specs_seguridad/
+
+# Guías personales de despliegue
+guias_personales/
+

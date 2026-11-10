@@ -1,6 +1,5 @@
 package com.fabrizio.easyecommerce.configSecurity;
 
-
 import com.fabrizio.easyecommerce.enums.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,12 +14,12 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
-import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -63,12 +62,13 @@ public class HttpSecurityCode {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
@@ -86,18 +86,18 @@ public class HttpSecurityCode {
 
             authConfig.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
             authConfig.requestMatchers("/actuator/**").hasRole("ADMINISTRATOR");
-            authConfig.requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll();
+            authConfig.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
             authConfig.requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll();
             authConfig.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll();
             authConfig.requestMatchers(HttpMethod.GET, "/api/auth/auth-me").authenticated();
 
-            authConfig.requestMatchers(HttpMethod.GET, "/api/categories").hasAuthority(Permission.READ_ALL_CATEGORIES.name());
+            authConfig.requestMatchers(HttpMethod.GET, "/api/categories").permitAll();
             authConfig.requestMatchers(HttpMethod.POST, "/api/categories").hasAuthority(Permission.SAVE_ONE_CATEGORY.name());
             authConfig.requestMatchers(HttpMethod.PUT, "/api/categories/*").hasAuthority(Permission.UPDATE_ONE_CATEGORY.name());
             authConfig.requestMatchers(HttpMethod.DELETE, "/api/categories/*").hasAuthority(Permission.DELETE_ONE_CATEGORY.name());
 
-            authConfig.requestMatchers(HttpMethod.GET, "/api/products").hasAuthority(Permission.READ_ALL_PRODUCTS.name());
-            authConfig.requestMatchers(HttpMethod.GET, "/api/products/*").hasAuthority(Permission.READ_ONE_PRODUCT.name());
+            authConfig.requestMatchers(HttpMethod.GET, "/api/products").permitAll();
+            authConfig.requestMatchers(HttpMethod.GET, "/api/products/*").permitAll();
             authConfig.requestMatchers(HttpMethod.POST, "/api/products").hasAuthority(Permission.SAVE_ONE_PRODUCT.name());
             authConfig.requestMatchers(HttpMethod.PUT, "/api/products/*").hasAuthority(Permission.UPDATE_ONE_PRODUCT.name());
             authConfig.requestMatchers(HttpMethod.DELETE, "/api/products/*").hasAuthority(Permission.DELETE_ONE_PRODUCT.name());
@@ -118,5 +118,4 @@ public class HttpSecurityCode {
 
         };
     }
-
 }

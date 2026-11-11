@@ -1,19 +1,19 @@
 # EasyCommerce - Infraestructura
 
-Repositorio de infraestructura del TP integrador de HIA. Levanta la tienda
-(PostgreSQL + backend Spring Boot + frontend) y las herramientas de apoyo
+Módulo de infraestructura consolidado del TP integrador de HIA. Levanta la tienda
+(PostgreSQL + backend Spring Boot + frontend Nginx) y las herramientas de apoyo
 (Prometheus, Grafana, pgAdmin, n8n, Jira) con Docker Compose.
 
 ## Requisitos
 
-- Docker Desktop en ejecución.
-- Los tres repositorios clonados **lado a lado**, con estos nombres de carpeta:
+- Docker Desktop o Docker Engine (WSL2 / Linux) en ejecución.
+- Repositorios clonados lado a lado:
 
 ```
 carpeta-del-tp/
-├── easyecommerce/                 (backend)
-├── ecommerce-front/               (frontend)
-└── easycommerce-infrastructure/   (este repo)
+├── easyecommerce/                 (backend con infraestructura consolidada)
+│   └── infrastructure/            (este directorio con los compose)
+└── ecommerce-front/               (frontend React)
 ```
 
 ## Dos archivos compose

@@ -1,0 +1,58 @@
+name: easycommerce-app
+
+services:
+  db:
+    image: postgres:15
+    container_name: easycommerce-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-easyecommerce}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defini POSTGRES_PASSWORD en .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - easycommerce-network
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: easycommerce-app
+    restart: unless-stopped
+    environment:
+      DB_NAME: jdbc:postgresql://db:5432/${POSTGRES_DB:-easyecommerce}
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Defini POSTGRES_PASSWORD en .env}
+      PORT: 8081
+      SQL_INIT_MODE: ${SQL_INIT_MODE:-never}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - easycommerce-network
+
+  frontend:
+    build:
+      context: ../../ecommerce-front
+      dockerfile: Dockerfile
+    container_name: easycommerce-frontend
+    restart: unless-stopped
+    depends_on:
+      - app
+    networks:
+      - easycommerce-network
+
+networks:
+  easycommerce-network:
+    name: easycommerce-network   # nombre fijo para que el compose de tools se pueda unir
+    driver: bridge
+
+volumes:
+  postgres_data:

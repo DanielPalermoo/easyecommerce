@@ -37,3 +37,15 @@ server:
 security:
   jwt:
     expiration-minutes: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+    prometheus:
+      enabled: true
+

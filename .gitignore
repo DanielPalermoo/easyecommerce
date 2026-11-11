@@ -37,6 +37,8 @@ build/
 .evn
 *.env
 *.env.*
+!*.env.example
+!.env.example
 *.zip
 
 # Specs internas de remediación

@@ -93,11 +93,20 @@ borra los volúmenes (en n8n también se pierden los flujos y la cuenta).
   (siempre en `127.0.0.1`) los abre el `override`, que no se usa en el servidor.
 - Las imágenes tienen versión fija.
 
-## Estado y pendientes
+## Guía Rápida de Comandos y Resolución de Problemas
 
-- El front llama directo a `http://localhost:8081` y el navegador lo bloquea por CORS.
-  Solución prevista: que el Nginx del front reenvíe `/api` al backend.
-- Para que el target `backend` de Prometheus pase de DOWN a UP, falta agregar
-  Actuator y Micrometer al `pom.xml` del backend.
-- `-DskipTests` se usa en el build del backend para la primera puesta en marcha;
-  en CI/CD hay que ejecutar los tests y bloquear el build si fallan.
+### Comandos del día a día
+* **Uso diario habitual:** `docker compose up -d`  
+  *(Tarda 2 segundos; levanta los contenedores existentes sin reconstruir).*
+* **Apagar los servicios:** `docker compose down`
+* **Al actualizar el código (`git pull`):** `docker compose up -d --build`  
+  *(Compila el nuevo código del backend y frontend).*
+
+### Si Docker muestra una versión vieja del Frontend tras un `git pull`
+Si al entrar a `http://localhost:8082` ves la pantalla anterior o en la terminal Docker muestra `CACHED [frontend build ...] RUN npm run build`:
+1. **Recompilar el frontend ignorando la caché:**
+   ```powershell
+   docker compose build --no-cache frontend
+   docker compose up -d frontend
+   ```
+2. **Limpiar la caché del navegador:** Presiona **`Ctrl + F5`** (o `Ctrl + Shift + R`) en la pestaña de `http://localhost:8082` o abre en modo incógnito.

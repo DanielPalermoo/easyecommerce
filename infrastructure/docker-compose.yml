@@ -20,35 +20,47 @@ services:
     networks:
       - easycommerce-network
 
+  # ---------- BACKEND SPRING BOOT ----------
   app:
     build:
       context: ..
       dockerfile: Dockerfile
     container_name: easycommerce-app
     restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:8081:8081"
+
     environment:
       DB_NAME: jdbc:postgresql://db:5432/${POSTGRES_DB:-easyecommerce}
       DB_USER: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?Defini POSTGRES_PASSWORD en .env}
       PORT: 8081
       SQL_INIT_MODE: ${SQL_INIT_MODE:-always}
+
     depends_on:
       db:
         condition: service_healthy
+
     networks:
       - easycommerce-network
 
+  # ---------- FRONTEND REACT + NGINX ----------
   frontend:
     build:
       context: ../../ecommerce-front
       dockerfile: Dockerfile
     container_name: easycommerce-frontend
     restart: unless-stopped
+
     depends_on:
       - app
+
+    ports:
+      - "127.0.0.1:8082:80"
+
     networks:
       - easycommerce-network
-      
   pgadmin:
     image: dpage/pgadmin4:8.12
     container_name: easycommerce-pgadmin

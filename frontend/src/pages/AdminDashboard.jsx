@@ -519,8 +519,7 @@ export default function AdminDashboard() {
                                                     <option value="CREATED">CREATED</option>
                                                     <option value="PAID">PAID</option>
                                                     <option value="SHIPPED">SHIPPED</option>
-                                                    <option value="DELIVERED">DELIVERED</option>
-                                                    <option value="CANCELLED">CANCELLED</option>
+                                                    <option value="CANCELED">CANCELED</option>
                                                 </select>
                                             </td>
                                         </tr>

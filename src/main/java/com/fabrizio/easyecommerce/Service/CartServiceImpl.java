@@ -134,13 +134,6 @@ public class CartServiceImpl implements CartService {
             return new CartNotFoundException("Cart item with id " + cartItemId + " not found");
         });
 
-        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!item.getCart().getUser().getEmail().equals(currentEmail)) {
-            log.warn("Usuario {} intentó modificar el CartItem {} de otro usuario", currentEmail, cartItemId);
-            throw new org.springframework.security.access.AccessDeniedException(
-                    "No tienes autorización para modificar ítems de otro usuario");
-        }
-
         if (quantity <= 0) {
             log.warn("Intento de asignar cantidad inválida ({}) al CartItem ID: {}", quantity, cartItemId);
             throw new QuantityException("Quantity must be greater than 0");
@@ -155,19 +148,11 @@ public class CartServiceImpl implements CartService {
     public void removeCartItem(Long cartItemId) {
         log.info("Removiendo ítem ID: {} del carrito", cartItemId);
 
-        CartItem item = cartItemRepository.findById(cartItemId).orElseThrow(() -> {
+        if (!cartItemRepository.existsById(cartItemId)) {
             log.error("Fallo al eliminar: El CartItem ID: {} no existe", cartItemId);
-            return new CartNotFoundException("Cart item with id " + cartItemId + " not found");
-        });
-
-        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!item.getCart().getUser().getEmail().equals(currentEmail)) {
-            log.warn("Usuario {} intentó eliminar el CartItem {} de otro usuario", currentEmail, cartItemId);
-            throw new org.springframework.security.access.AccessDeniedException(
-                    "No tienes autorización para eliminar ítems de otro usuario");
+            throw new CartNotFoundException("Cart item with id " + cartItemId + " not found");
         }
-
-        cartItemRepository.delete(item);
+        cartItemRepository.deleteById(cartItemId);
         log.info("Ítem ID: {} eliminado correctamente", cartItemId);
     }
 

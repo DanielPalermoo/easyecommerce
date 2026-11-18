@@ -153,13 +153,4 @@ public class CartController {
         cartService.clearCart(userId);
         return ResponseEntity.status(HttpStatus.OK).body("Cart cleared successfully");
     }
-
-    @PreAuthorize("hasAuthority('CLEAR_CART')")
-    @DeleteMapping("/clear")
-    public ResponseEntity<String> clearMyCart() {
-        CartResponseDTO cart = cartService.getMyCart();
-        logger.info("REST request to clear current user's cart");
-        cartService.clearCart(cart.getUserId());
-        return ResponseEntity.status(HttpStatus.OK).body("Cart cleared successfully");
-    }
 }

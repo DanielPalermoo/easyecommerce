@@ -99,7 +99,7 @@ public class CategoryController {
 
     @Operation(
             summary = "Update category",
-            description = "Update a category by name. Requires UPDATE_ONE_CATEGORY permission",
+            description = "Update a category by id. Requires UPDATE_ONE_CATEGORY permission",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
@@ -109,10 +109,10 @@ public class CategoryController {
             @ApiResponse(responseCode = "403", description = "Access denied")
     })
     @PreAuthorize("hasAuthority('UPDATE_ONE_CATEGORY')")
-    @PutMapping("/{name}")
-    public ResponseEntity<String> updateOneCategory(@PathVariable String name,
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateOneCategory(@PathVariable Long id,
                                                     @Valid @RequestBody CategoryRequestDTO request){
-        categoryService.updateCategory(name, request);
+        categoryService.updateCategory(id, request);
         return ResponseEntity.status(HttpStatus.OK).body("Category updated successfully");
     }
 }

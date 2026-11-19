@@ -46,10 +46,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void updateCategory(String name, CategoryRequestDTO categoryRequestDTO) {
-        Category categoryUpdated = categoryRepository.findByName(name).orElseThrow(() -> new CategoryNotFoundException("Category with name " + name + " not found"));
+    public void updateCategory(Long id, CategoryRequestDTO categoryRequestDTO) {
+        Category categoryUpdated = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(
+                        "Category with id " + id + " not found"
+                ));
+
         categoryUpdated.setName(categoryRequestDTO.getName());
         categoryUpdated.setDescription(categoryRequestDTO.getDescription());
+
         categoryRepository.save(categoryUpdated);
     }
 }

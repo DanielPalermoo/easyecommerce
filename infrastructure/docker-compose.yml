@@ -234,7 +234,57 @@ services:
     networks:
       - easycommerce-network
 
+    # ---------- Base de Datos de NextCloud ----------
 
+  db-nextCloud:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Configurar DB_PASSWORD en .env}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U nextcloud -d nextcloud" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  nextCloud:
+    image: nextcloud:apache
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8092:80"
+    environment:
+      POSTGRES_HOST: db-nextCloud
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Configurar DB_PASSWORD en .env}
+      REDIS_HOST: redis
+      NEXTCLOUD_ADMIN_USER: ${NC_ADMIN_USER:?Configurar NC_ADMIN_USER en .env}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NC_ADMIN_PASSWORD:?Configurar NC_ADMIN_PASSWORD en .env}
+      NEXTCLOUD_TRUSTED_DOMAINS: localhost 127.0.0.1
+    volumes:
+      - nc_data:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  cron:
+    image: nextcloud:apache
+    restart: unless-stopped
+    entrypoint: /cron.sh
+    volumes:
+      - nc_data:/var/www/html
+    depends_on:
+      - nextCloud
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
 networks:
   easycommerce-network:
     name: easycommerce-network   # nombre fijo para que el compose de tools se pueda unir
@@ -250,3 +300,5 @@ volumes:
   mantis_db_data:
   mantis_config:
   mantis_custom:
+  db_data:
+  nc_data:

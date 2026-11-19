@@ -285,10 +285,23 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+
+#---------- Túnel de Cloudflare ----------
+  cloudflared:
+    image: cloudflare/cloudflared:2026.3.0
+    container_name: easycommerce-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://frontend:80
+    depends_on:
+      - frontend
+    networks:
+      - easycommerce-network
+
 networks:
   easycommerce-network:
     name: easycommerce-network   # nombre fijo para que el compose de tools se pueda unir
     driver: bridge
+  
 
 volumes:
   postgres_data:

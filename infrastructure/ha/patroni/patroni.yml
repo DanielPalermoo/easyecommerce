@@ -1,0 +1,53 @@
+﻿scope: easycommerce-ha
+namespace: /service/
+name: easycommerce-node
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: 127.0.0.1:8008
+
+etcd3:
+  hosts:
+    - etcd1:2379
+    - etcd2:2379
+    - etcd3:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    check_timeline: true
+    synchronous_mode: false
+    postgresql:
+      use_pg_rewind: true
+      parameters:
+        wal_level: replica
+        hot_standby: "on"
+        wal_log_hints: "on"
+        max_wal_senders: 10
+        max_replication_slots: 10
+        max_connections: 200
+        password_encryption: scram-sha-256
+      pg_hba:
+        - host replication replicator 127.0.0.1/32 scram-sha-256
+        - host all all 127.0.0.1/32 scram-sha-256
+        - host replication replicator 172.30.50.0/24 scram-sha-256
+        - host all all 172.30.50.0/24 scram-sha-256
+
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: 127.0.0.1:5432
+  data_dir: /var/lib/postgresql/data
+  bin_dir: /usr/lib/postgresql/15/bin
+  authentication:
+    superuser:
+      username: postgres
+    replication:
+      username: replicator
+  use_pg_rewind: true

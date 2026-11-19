@@ -1,0 +1,177 @@
+﻿name: easycommerce-ha
+
+services:
+  etcd1:
+    image: quay.io/coreos/etcd:v3.5.17
+    container_name: easycommerce-ha-etcd1
+    restart: unless-stopped
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd1
+      - --data-dir=/etcd-data
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd1:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://etcd1:2380
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-state=new
+      - --initial-cluster-token=easycommerce-ha-etcd
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/etcdctl", "--endpoints=http://127.0.0.1:2379", "endpoint", "health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    volumes:
+      - etcd1_data:/etcd-data
+    networks:
+      - ha-network
+
+  etcd2:
+    image: quay.io/coreos/etcd:v3.5.17
+    container_name: easycommerce-ha-etcd2
+    restart: unless-stopped
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd2
+      - --data-dir=/etcd-data
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd2:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://etcd2:2380
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-state=new
+      - --initial-cluster-token=easycommerce-ha-etcd
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/etcdctl", "--endpoints=http://127.0.0.1:2379", "endpoint", "health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    volumes:
+      - etcd2_data:/etcd-data
+    networks:
+      - ha-network
+
+  etcd3:
+    image: quay.io/coreos/etcd:v3.5.17
+    container_name: easycommerce-ha-etcd3
+    restart: unless-stopped
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd3
+      - --data-dir=/etcd-data
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd3:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://etcd3:2380
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-state=new
+      - --initial-cluster-token=easycommerce-ha-etcd
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/etcdctl", "--endpoints=http://127.0.0.1:2379", "endpoint", "health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    volumes:
+      - etcd3_data:/etcd-data
+    networks:
+      - ha-network
+
+  patroni1:
+    build:
+      context: ./patroni
+      dockerfile: Dockerfile
+    container_name: easycommerce-ha-patroni1
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PATRONI_NAME: patroni1
+      PATRONI_SCOPE: easycommerce-ha
+      PATRONI_NAMESPACE: /service/
+      PATRONI_RESTAPI_CONNECT_ADDRESS: patroni1:8008
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: patroni1:5432
+      PATRONI_RESTAPI_USERNAME: ${PATRONI_RESTAPI_USERNAME}
+      PATRONI_RESTAPI_PASSWORD: ${PATRONI_RESTAPI_PASSWORD}
+      PATRONI_SUPERUSER_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD}
+      PATRONI_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD}
+    volumes:
+      - patroni1_recovery_data:/var/lib/postgresql/data
+      - ./patroni/patroni.yml:/etc/patroni/patroni.yml:ro
+    depends_on:
+      etcd1:
+        condition: service_healthy
+      etcd2:
+        condition: service_healthy
+      etcd3:
+        condition: service_healthy
+    networks:
+      ha-network:
+        ipv4_address: 172.30.50.11
+
+  patroni2:
+    build:
+      context: ./patroni
+      dockerfile: Dockerfile
+    container_name: easycommerce-ha-patroni2
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PATRONI_NAME: patroni2
+      PATRONI_SCOPE: easycommerce-ha
+      PATRONI_NAMESPACE: /service/
+      PATRONI_RESTAPI_CONNECT_ADDRESS: patroni2:8008
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: patroni2:5432
+      PATRONI_RESTAPI_USERNAME: ${PATRONI_RESTAPI_USERNAME}
+      PATRONI_RESTAPI_PASSWORD: ${PATRONI_RESTAPI_PASSWORD}
+      PATRONI_SUPERUSER_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD}
+      PATRONI_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD}
+    volumes:
+      - patroni2_data:/var/lib/postgresql/data
+      - ./patroni/patroni.yml:/etc/patroni/patroni.yml:ro
+    depends_on:
+      etcd1:
+        condition: service_healthy
+      etcd2:
+        condition: service_healthy
+      etcd3:
+        condition: service_healthy
+    networks:
+      ha-network:
+        ipv4_address: 172.30.50.12
+
+  haproxy:
+    image: haproxy:3.0
+    container_name: easycommerce-ha-haproxy
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5433:5000"
+      - "127.0.0.1:7000:7000"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - patroni1
+      - patroni2
+    networks:
+      - ha-network
+
+volumes:
+  etcd1_data:
+  etcd2_data:
+  etcd3_data:
+  patroni1_data:
+  patroni1_recovery_data:
+  patroni2_data:
+
+networks:
+  ha-network:
+    name: easycommerce-ha-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.50.0/24
+
+

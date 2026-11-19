@@ -51,3 +51,7 @@ guias_personales/
 /frontend/node_modules/
 /frontend/dist/
 
+# PostgreSQL HA - secretos locales
+/infrastructure/ha/.env
+/infrastructure/ha/secrets/
+

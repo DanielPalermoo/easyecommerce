@@ -81,20 +81,20 @@ class CategoryControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    // 🟢 UPDATE (usa categoría existente del import.sql)
+    // UPDATE (usa categoría existente del import.sql)
     @Test
     void shouldUpdateCategory() throws Exception {
 
         String token = getToken();
 
         String request = """
-                {
-                  "name": "Electronics",
-                  "description": "Actualizada"
-                }
-                """;
+            {
+              "name": "Electronics",
+              "description": "Actualizada"
+            }
+            """;
 
-        mockMvc.perform(put("/api/categories/Electronics")
+        mockMvc.perform(put("/api/categories/1")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))

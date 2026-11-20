@@ -134,10 +134,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Preparar entorno principal
-        run: cp infrastructure/.env.example.example infrastructure/.env.example
+        run: cp infrastructure/.env.example infrastructure/.env
 
       - name: Preparar entorno PostgreSQL HA
-        run: cp infrastructure/ha/.env.example.example infrastructure/ha/.env.example
+        run: |
+          if [ -f infrastructure/ha/.env.example ]; then
+            cp infrastructure/ha/.env.example infrastructure/ha/.env
+          fi
 
       - name: Validar sintaxis de docker-compose.yml
         run: docker compose -f infrastructure/docker-compose.yml config --quiet

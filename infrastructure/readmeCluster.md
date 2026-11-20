@@ -92,8 +92,8 @@ cd easyecommerce/infrastructure
 
 Crear los archivos de variables de entorno a partir de sus respectivas plantillas:
 
-- `.env.example` → `.env`
-- `ha/.env.example` → `ha/.env`
+- `.env` → `.env`
+- `ha/.env` → `ha/.env`
 
 Completar los valores requeridos en cada archivo.
 
@@ -270,7 +270,7 @@ Este informe documenta:
 - No publicar contraseñas, tokens ni claves privadas.
 - No versionar dumps de bases de datos.
 - No eliminar volúmenes de PostgreSQL sin una copia de seguridad y autorización.
-- Utilizar archivos `.env.example` sin credenciales reales.
+- Utilizar archivos `.env` sin credenciales reales.
 - Revisar los cambios antes de realizar un commit.
 
 ## 12. Consideraciones

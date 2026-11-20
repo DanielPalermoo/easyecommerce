@@ -120,7 +120,7 @@ jobs:
         with:
           name: frontend-dist
           path: frontend/dist/
-          retention-days: 7
+          retention-days: 7https://github.com/DanielPalermoo/easyecommerce/pull/11/conflict?name=.github%252Fworkflows%252Fci-cd.yml&ancestor_oid=b9605f4908166d9bfab1bd41fba57422d4fb3ebc&base_oid=676c2a56d0a30f5f40fe3485a7397e84c8f266c6&head_oid=f451a49c2d95e831245aa047d444f0e4b66bfe8d
 
   # ========================================================
   # JOB 4: Validación y Linting de Infraestructura (Docker Compose & Prometheus)
@@ -135,6 +135,12 @@ jobs:
 
       - name: Preparar archivo de entorno para Compose
         run: cp infrastructure/.env infrastructure/.env
+
+      - name: Preparar entorno PostgreSQL HA
+        run: |
+          if [ -f infrastructure/ha/.env.example ]; then
+            cp infrastructure/ha/.env.example infrastructure/ha/.env
+          fi
 
       - name: Validar sintaxis de docker-compose.yml
         run: docker compose -f infrastructure/docker-compose.yml config --quiet

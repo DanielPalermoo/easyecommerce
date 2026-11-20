@@ -133,8 +133,11 @@ jobs:
       - name: Checkout del código fuente
         uses: actions/checkout@v4
 
-      - name: Preparar archivo de entorno para Compose
+      - name: Preparar entorno principal
         run: cp infrastructure/.env.example infrastructure/.env
+
+      - name: Preparar entorno PostgreSQL HA
+        run: cp infrastructure/ha/.env.example infrastructure/ha/.env
 
       - name: Validar sintaxis de docker-compose.yml
         run: docker compose -f infrastructure/docker-compose.yml config --quiet

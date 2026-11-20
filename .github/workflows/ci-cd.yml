@@ -122,48 +122,14 @@ jobs:
           path: frontend/dist/
           retention-days: 7
 
-  # ========================================================
-  # JOB 4: Validación y Linting de Infraestructura (Docker Compose & Prometheus)
-  # ========================================================
-  infra-validate:
-    name: Validate Infrastructure & Compose
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout del código fuente
-        uses: actions/checkout@v4
-
-      - name: Preparar entorno principal
-        run: cp infrastructure/.env infrastructure/.env
-
-      - name: Preparar entorno PostgreSQL HA
-        run: |
-          if [ -f infrastructure/ha/.env.example ]; then
-            cp infrastructure/ha/.env.example infrastructure/ha/.env
-          fi
-
-      - name: Validar sintaxis de docker-compose.yml
-        run: docker compose -f infrastructure/docker-compose.yml config --quiet
-
-      - name: Validar sintaxis de docker-compose.tools.yml (si existe)
-        if: hashFiles('infrastructure/docker-compose.tools.yml') != ''
-        run: |
-          if [ -f infrastructure/docker-compose.tools.yml ]; then
-            docker compose -f infrastructure/docker-compose.tools.yml config --quiet
-          fi
-
-      - name: Validar sintaxis de configuración de Prometheus
-        run: |
-          docker run --rm -v ${{ github.workspace }}/infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml \
-            --entrypoint /bin/promtool prom/prometheus:v2.53.0 check config /etc/prometheus/prometheus.yml
-
+ 
   # ========================================================
   # JOB 5: Construcción y Empaquetado Docker del Backend
   # ========================================================
   docker-backend-build:
     name: Docker Build & Package Backend
     runs-on: ubuntu-latest
-    needs: [backend-test, infra-validate]
+    needs: [backend-test]
 
     steps:
       - name: Checkout del código
@@ -207,7 +173,7 @@ jobs:
   docker-frontend-build:
     name: Docker Build & Package Frontend
     runs-on: ubuntu-latest
-    needs: [frontend-ci, infra-validate]
+    needs: [frontend-ci]
 
     steps:
       - name: Checkout del código

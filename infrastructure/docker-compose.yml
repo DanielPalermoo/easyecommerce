@@ -64,7 +64,7 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
-      - easycommerce-network  
+      - easycommerce-network
 
   prometheus:
     image: prom/prometheus:v2.53.0
@@ -177,9 +177,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    networks: 
+    networks:
       - easycommerce-network
-    
+
   db-backup:
     build: ./backup
     container_name: easycommerce-db-backup

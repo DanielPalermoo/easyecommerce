@@ -157,6 +157,7 @@ services:
       - patroni2
     networks:
       - ha-network
+      - easycommerce-network
 
 volumes:
   etcd1_data:
@@ -175,3 +176,6 @@ networks:
         - subnet: 172.30.50.0/24
 
 
+  easycommerce-network:
+    name: easycommerce-network
+    external: true

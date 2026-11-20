@@ -27,15 +27,13 @@ services:
       dockerfile: Dockerfile
     container_name: easycommerce-app
     restart: unless-stopped
+
     environment:
-      DB_NAME: jdbc:postgresql://db:5432/${POSTGRES_DB:-easyecommerce}
-      DB_USER: ${POSTGRES_USER:-postgres}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:?Defini POSTGRES_PASSWORD en .env}
+      DB_NAME: jdbc:postgresql://haproxy:5000/easyecommerce?options=-c%20timezone=UTC
+      DB_USER: ${DB_APP_USER:?Defini DB_APP_USER en .env}
+      DB_PASSWORD: ${DB_APP_PASSWORD:?Defini DB_APP_PASSWORD en .env}
       PORT: 8081
-      SQL_INIT_MODE: ${SQL_INIT_MODE:-always}
-    depends_on:
-      db:
-        condition: service_healthy
+      SQL_INIT_MODE: never
 
     networks:
       - easycommerce-network
@@ -102,10 +100,15 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.15.0
     container_name: easycommerce-postgres-exporter
     restart: unless-stopped
+
+    command:
+      - --no-collector.wal
+
     environment:
-      DATA_SOURCE_URI: db:5432/${POSTGRES_DB:-easyecommerce}?sslmode=disable
-      DATA_SOURCE_USER: ${POSTGRES_USER:-postgres}
-      DATA_SOURCE_PASS: ${POSTGRES_PASSWORD:?Defini POSTGRES_PASSWORD en .env}
+      DATA_SOURCE_URI: haproxy:5000/easyecommerce?sslmode=disable
+      DATA_SOURCE_USER: ${DB_APP_USER:?Defini DB_APP_USER en .env}
+      DATA_SOURCE_PASS: ${DB_APP_PASSWORD:?Defini DB_APP_PASSWORD en .env}
+
     networks:
       - easycommerce-network
 
@@ -182,18 +185,17 @@ services:
     container_name: easycommerce-db-backup
     restart: unless-stopped
     environment:
-      PGHOST: db
-      PGUSER: ${POSTGRES_USER:-postgres}
-      PGPASSWORD: ${POSTGRES_PASSWORD:?Defini POSTGRES_PASSWORD en .env}
-      PGDATABASE: ${POSTGRES_DB:-easyecommerce}
+      PGHOST: haproxy
+      PGPORT: "5000"
+      PGUSER: ${DB_BACKUP_USER:?Defini DB_BACKUP_USER en .env}
+      PGPASSWORD: ${DB_BACKUP_PASSWORD:?Defini DB_BACKUP_PASSWORD en .env}
+      PGDATABASE: easyecommerce
       BACKUP_TOKEN: ${BACKUP_TOKEN:?Defini BACKUP_TOKEN en .env}
     volumes:
       - backups_data:/backups
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - easycommerce-network
+
  # ---------- Gestion de incidencias: MantisBT ----------
   # Base propia (MariaDB), separada de la PostgreSQL de la aplicacion.
   mantis-db:

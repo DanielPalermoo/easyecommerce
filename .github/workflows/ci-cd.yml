@@ -210,3 +210,48 @@ jobs:
           labels: ${{ steps.meta-frontend.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # ========================================================
+  # JOB 7: Despliegue Continuo con Watchtower
+  # ========================================================
+  # Las imagenes ya quedaron publicadas en GHCR con el tag de la rama.
+  # En el servidor, Watchtower las detecta por polling (cada WATCHTOWER_POLL_INTERVAL s)
+  # y recrea app/frontend. Si estan configurados los secrets WATCHTOWER_URL y
+  # WATCHTOWER_HTTP_API_TOKEN, este job dispara la actualizacion al instante.
+  deploy:
+    name: Deploy automatico (Watchtower)
+    runs-on: ubuntu-latest
+    needs: [docker-backend-build, docker-frontend-build]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    concurrency:
+      group: deploy-${{ github.ref_name }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Disparar actualizacion inmediata en Watchtower
+        env:
+          WATCHTOWER_URL: ${{ secrets.WATCHTOWER_URL }}
+          WATCHTOWER_TOKEN: ${{ secrets.WATCHTOWER_HTTP_API_TOKEN }}
+        run: |
+          if [ -z "$WATCHTOWER_URL" ] || [ -z "$WATCHTOWER_TOKEN" ]; then
+            echo "::notice::Secrets WATCHTOWER_URL / WATCHTOWER_HTTP_API_TOKEN no configurados. Watchtower aplicara la nueva imagen en el proximo ciclo de polling."
+            exit 0
+          fi
+          curl -fsS -X POST --retry 3 --retry-delay 5 --max-time 300 \
+            -H "Authorization: Bearer ${WATCHTOWER_TOKEN}" \
+            "${WATCHTOWER_URL%/}/v1/update"
+          echo "Actualizacion disparada en Watchtower."
+
+      - name: Resumen del despliegue
+        run: |
+          OWNER_REPO="$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
+          {
+            echo "## Despliegue continuo"
+            echo ""
+            echo "| Componente | Imagen publicada |"
+            echo "|---|---|"
+            echo "| Backend | \`ghcr.io/${OWNER_REPO}/backend:${{ github.ref_name }}\` |"
+            echo "| Frontend | \`ghcr.io/${OWNER_REPO}/frontend:${{ github.ref_name }}\` |"
+            echo ""
+            echo "Commit: \`${GITHUB_SHA::7}\` — Watchtower recrea los contenedores en el servidor con \`IMAGE_TAG=${{ github.ref_name }}\`."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -76,6 +76,64 @@ Conexiones entre herramientas (siempre por nombre de servicio, no por `localhost
 `node-exporter` y `cadvisor` están en el perfil `linux`: se usan solo en el
 servidor Linux (`--profile linux`), porque en Windows miden la VM de Docker.
 
+## 3. Despliegue continuo con Watchtower
+
+El flujo completo es automático: **push a `develop` → CI/CD → imagen en GHCR → Watchtower → contenedor actualizado**.
+
+```
+git push (develop/main)
+  └─ GitHub Actions: tests → build Docker → push a ghcr.io/danielpalermoo/easyecommerce/{backend,frontend}:<rama>
+       └─ job "deploy": avisa a Watchtower (opcional, si hay secrets)
+            └─ Watchtower (servidor): pull de la imagen nueva → recrea app / frontend → borra la imagen vieja
+```
+
+- Watchtower solo actualiza los contenedores con la etiqueta
+  `com.centurylinklabs.watchtower.enable=true` (`app` y `frontend`). Bases de datos y
+  herramientas no se tocan.
+- Cuando se recrea `app`, también se reinicia `frontend` (etiqueta `depends-on`) para que
+  Nginx vuelva a resolver la IP del backend.
+- Se usa `nickfedor/watchtower` (fork mantenido): el `containrrr/watchtower` original está
+  archivado y entra en bucle de error con Docker Engine 29+.
+
+### Primer despliegue en el servidor
+
+```bash
+cp .env.example .env            # completar WATCHTOWER_HTTP_API_TOKEN e IMAGE_TAG (develop o main)
+docker compose pull app frontend   # baja las imágenes del CI en vez de compilar
+docker compose up -d
+docker compose logs -f watchtower
+```
+
+> No uses `--build` en el servidor: compila localmente en lugar de usar la imagen del CI.
+> (Igual Watchtower la reemplaza por la de GHCR en el siguiente ciclo.)
+
+### Paquetes de GHCR
+
+Por defecto GHCR crea los paquetes como **privados**. Hay dos opciones:
+
+1. Hacerlos públicos: GitHub → *Packages* → `easyecommerce/backend` y `easyecommerce/frontend`
+   → *Package settings* → *Change visibility* → Public.
+2. Dejarlos privados y completar `GHCR_USER` y `GHCR_TOKEN` (PAT con scope `read:packages`)
+   en el `.env`, y también hacer `docker login ghcr.io` en el servidor para el primer `pull`.
+
+### Despliegue instantáneo desde el CI (opcional)
+
+Sin configurar nada, Watchtower revisa GHCR cada `WATCHTOWER_POLL_INTERVAL` segundos (60 por
+defecto). Para que el job `deploy` lo dispare apenas termina el build, exponé la API de
+Watchtower (puerto `127.0.0.1:8084`, por ejemplo con un túnel de Cloudflare con dominio fijo) y
+cargá en GitHub → *Settings* → *Secrets and variables* → *Actions*:
+
+| Secret | Valor |
+|---|---|
+| `WATCHTOWER_URL` | URL pública de la API, p. ej. `https://watchtower.midominio.com` |
+| `WATCHTOWER_HTTP_API_TOKEN` | El mismo valor de `WATCHTOWER_HTTP_API_TOKEN` del `.env` |
+
+Prueba manual de la API desde el servidor:
+
+```bash
+curl -X POST -H "Authorization: Bearer $WATCHTOWER_HTTP_API_TOKEN" http://127.0.0.1:8084/v1/update
+```
+
 ## Detener servicios
 
 ```powershell

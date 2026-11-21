@@ -8,7 +8,7 @@ export default function Navbar({ user, isAdmin, onLogout }) {
         <header className="navbar">
             <nav>
                 <Link to="/" className="brand" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    🛍️ <span>prueba watchtower</span>
+                    🛍️ <span>prueba hia</span>
                 </Link>
                 <Link to="/products">Catálogo</Link>
                 {user && <Link to="/orders">Mis pedidos</Link>}
